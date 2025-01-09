@@ -1,4 +1,6 @@
-<script setup></script>
+<script setup>
+defineEmits(['start'])
+</script>
 
 <template>
   <div class="content">
@@ -7,9 +9,9 @@
       <img src="../assets/image copy 4.png" class="subh" />
     </div>
     <div class="buttons">
-      <button class="startBs"><p class="text1">Easy</p></button>
-      <button class="startBs"><p class="text2">Medium</p></button>
-      <button class="startBs"><p class="text3">Hard</p></button>
+      <button class="startBs" @click="$emit('start', 5)"><p class="text1">Easy</p></button>
+      <button class="startBs" @click="$emit('start', 10)"><p class="text2">Medium</p></button>
+      <button class="startBs" @click="$emit('start', 15)"><p class="text3">Hard</p></button>
     </div>
   </div>
 </template>
@@ -19,6 +21,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  margin-top: 1.6rem;
 }
 
 .headers {
@@ -38,7 +41,7 @@
 .buttons {
   display: flex;
   justify-content: space-around;
-  padding: 4rem 10rem 0 10rem;
+  padding: 4rem 10rem 4rem 10rem;
 }
 
 .startBs {

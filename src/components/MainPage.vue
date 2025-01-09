@@ -1,9 +1,23 @@
 <script setup>
-import MenuComp from './MenuComp.vue'
-import { ref } from 'vue'
+import Step1 from './MenuComp.vue'
+import Step2 from './PlayArea.vue'
+import { ref, computed } from 'vue'
 
-const page = ref(0)
-console.log(page)
+let currentStep = ref(1)
+let cards = ref(0)
+
+const home = () => {
+  currentStep.value = 1
+}
+
+const start = (difficulty) => {
+  currentStep.value = 2
+  cards.value = difficulty
+}
+
+const getCurrentStepComponent = computed(() => {
+  return currentStep.value === 1 ? Step1 : Step2
+})
 
 const toggleFullscreen = () => {
   if (!document.fullscreenElement) {
@@ -38,7 +52,8 @@ const toggleFullscreen = () => {
         alt=""
         height="75rem"
         width="75rem"
-        style="margin: 1.6rem"
+        style="margin: 1.6rem 1.6rem 0 1.6rem"
+        @click="home"
       />
       <img
         src="../assets/image copy 2.png"
@@ -46,13 +61,14 @@ const toggleFullscreen = () => {
         width="25rem"
         style="margin: 2.4rem 1.5rem 0 0"
         @click="toggleFullscreen"
+        class="topimages"
       />
     </div>
 
-    <MenuComp />
+    <component :is="getCurrentStepComponent" :cards="cards" @start="start" />
 
     <div class="interact">
-      <div>
+      <div class="audiobuttons">
         <button class="interactbuttons">
           <img src="../assets/image copy 5.png" class="interactimage" />
         </button>
@@ -68,6 +84,11 @@ const toggleFullscreen = () => {
 </template>
 
 <style scoped>
+.audiobuttons {
+  display: flex;
+
+  gap: 2rem;
+}
 .interactimage {
   height: 1.5rem;
   width: 1.5rem;
@@ -85,13 +106,14 @@ const toggleFullscreen = () => {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: 5rem 3rem 0 3rem;
+  margin-top: 1rem;
+  padding: 0 2rem;
 }
 .interactbuttons {
   width: 4rem;
   height: 4rem;
   background: #800080;
-  border: 0.3rem solid #fd4300;
+  border: 0.15rem solid #fd4300;
   border-radius: 10rem;
 }
 .navbuttons {
