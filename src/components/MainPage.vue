@@ -1,10 +1,82 @@
 <script setup>
 import Step1 from './MenuComp.vue'
 import Step2 from './PlayArea.vue'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 
-let currentStep = ref(1)
-let cards = ref(0)
+const instructions = ref(false)
+const toggleinstruct = () => {
+  instructions.value = !instructions.value
+}
+
+// Toggle for background music
+const music = ref(false)
+const backgroundMusicPath =
+  '/JoJo_s_Bizarre_Adventure_Phantom_Blood_OST_-_Fukutsu_Mushin_No_Sakebi_(mp3.pm).mp3'
+let backgroundMusic = null
+
+const musicSrc = computed(() => (music.value ? '/image copy 6.png' : '/image copy 13.png'))
+
+const toggleMusic = () => {
+  music.value = !music.value
+  if (music.value) {
+    backgroundMusic.play().catch((err) => console.warn('Music playback failed:', err))
+  } else {
+    backgroundMusic.pause()
+  }
+}
+
+// Toggle for click sound effects
+const audio = ref(true)
+const audioSrc = computed(() => (audio.value ? '/image copy 5.png' : '/image copy 12.png'))
+
+const clickSoundPath = '/mixkit-select-click-1109.wav'
+
+const toggleAudio = () => {
+  audio.value = !audio.value
+}
+
+const playClickSound = () => {
+  if (audio.value) {
+    const audioElement = new Audio(clickSoundPath)
+    audioElement.play().catch((error) => {
+      console.warn('Audio playback failed:', error)
+    })
+  }
+}
+
+// Watch audio to manage click sound listeners
+watch(audio, (newValue) => {
+  if (newValue) {
+    window.addEventListener('click', playClickSound)
+  } else {
+    window.removeEventListener('click', playClickSound)
+  }
+})
+
+onMounted(() => {
+  // Set up background music
+  backgroundMusic = new Audio(backgroundMusicPath)
+  backgroundMusic.loop = true
+  if (music.value) {
+    backgroundMusic.play().catch((err) => console.warn('Music playback failed:', err))
+  }
+
+  // Add click sound listener if enabled
+  if (audio.value) {
+    window.addEventListener('click', playClickSound)
+  }
+})
+
+onUnmounted(() => {
+  if (backgroundMusic) {
+    backgroundMusic.pause()
+    backgroundMusic = null
+  }
+  window.removeEventListener('click', playClickSound)
+})
+
+const currentStep = ref(1)
+const cards = ref(0)
 
 const home = () => {
   currentStep.value = 1
@@ -21,25 +93,13 @@ const getCurrentStepComponent = computed(() => {
 
 const toggleFullscreen = () => {
   if (!document.fullscreenElement) {
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen()
-    } else if (document.documentElement.webkitRequestFullscreen) {
-      document.documentElement.webkitRequestFullscreen()
-    } else if (document.documentElement.mozRequestFullScreen) {
-      document.documentElement.mozRequestFullScreen()
-    } else if (document.documentElement.msRequestFullscreen) {
-      document.documentElement.msRequestFullscreen()
-    }
+    document.documentElement.requestFullscreen().catch((err) => {
+      console.warn('Error attempting to enable fullscreen mode:', err)
+    })
   } else {
-    if (document.exitFullscreen) {
-      document.exitFullscreen()
-    } else if (document.webkitExitFullscreen) {
-      document.webkitExitFullscreen()
-    } else if (document.mozCancelFullScreen) {
-      document.mozCancelFullScreen()
-    } else if (document.msExitFullscreen) {
-      document.msExitFullscreen()
-    }
+    document.exitFullscreen().catch((err) => {
+      console.warn('Error attempting to disable fullscreen mode:', err)
+    })
   }
 }
 </script>
@@ -49,7 +109,7 @@ const toggleFullscreen = () => {
     <div class="navbuttons">
       <img
         src="../assets/image copy.png"
-        alt=""
+        alt="Home"
         height="75rem"
         width="75rem"
         style="margin: 1.6rem 1.6rem 0 1.6rem"
@@ -65,25 +125,107 @@ const toggleFullscreen = () => {
       />
     </div>
 
+    <!-- Dynamically rendered component -->
     <component :is="getCurrentStepComponent" :cards="cards" @start="start" />
 
     <div class="interact">
       <div class="audiobuttons">
-        <button class="interactbuttons">
-          <img src="../assets/image copy 5.png" class="interactimage" />
+        <button class="interactbuttons" @click="toggleAudio">
+          <img :src="audioSrc" class="interactimage" />
         </button>
-        <button class="interactbuttons">
-          <img src="../assets/image copy 6.png" class="interactimage" />
+        <button class="interactbuttons" @click="toggleMusic">
+          <img :src="musicSrc" class="interactimage" />
         </button>
       </div>
       <div>
-        <button class="interactbuttons infobutton">?</button>
+        <div class="instructionbox">
+          <button class="interactbuttons infobutton" @click="toggleinstruct">?</button>
+          <div v-if="instructions" class="overlay" @click="toggleinstruct">
+            <img src="../assets/image copy 14.png" class="instructorimage" />
+            <div class="cloud">
+              <p class="instructtext">1. Click the top left icon to return to the home page.</p>
+              <p class="instructtext">2. Don’t click on the same card twice!</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.instructionbox {
+  position: relative; /* Set this as the reference for positioning */
+  display: inline-block; /* Ensure it takes the size of its contents */
+}
+
+/* Infobutton styles */
+.infobutton {
+  font-style: normal;
+  font-family: 'Anton';
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  color: #ffffff;
+  z-index: 1; /* Ensures button remains clickable */
+  position: relative; /* Relative to allow proper stacking of child elements */
+}
+
+/* Image copy 14 positioned relative to the infobutton */
+.instructorimage {
+  position: fixed;
+  bottom: 5.5rem; /* Align with the top-left of the infobutton */
+  right: 5rem; /* Adjust for horizontal alignment */
+  width: 5rem; /* Adjust size */
+  height: auto;
+  z-index: 2; /* Above infobutton */
+}
+
+/* Cloud image (image copy 15) with text inside */
+.cloud {
+  position: fixed;
+  bottom: 13.5rem; /* Adjust to align with the top-left of image copy 14 */
+  right: 7.5rem; /* Horizontal alignment with image copy 14 */
+  background-image: url('../assets/image copy 15.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 18rem;
+  height: 15rem; /* Adjust size for the cloud */
+
+  padding: 2rem; /* Inner padding for the text */
+  border-radius: 1rem; /* Optional rounded corners */
+
+  z-index: 3; /* Above image copy 14 */
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding-left: 2.9rem;
+  padding-right: 2.7rem;
+  padding-bottom: 6rem;
+}
+
+/* Cloud text styling */
+.cloud p {
+  margin: 0;
+  color: #333; /* Text color */
+  font-size: 1rem;
+  font-family: 'Anton';
+  font-style: normal;
+  font-weight: 700;
+
+  color: #1e1e1e;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  z-index: 100;
+}
+
 .audiobuttons {
   display: flex;
 
@@ -115,7 +257,30 @@ const toggleFullscreen = () => {
   background: #800080;
   border: 0.15rem solid #fd4300;
   border-radius: 10rem;
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
 }
+
+@keyframes bubble {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.interactbuttons:active {
+  animation: bubble 0.8s ease-out;
+}
+
 .navbuttons {
   display: flex;
   justify-content: space-between;

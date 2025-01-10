@@ -41,7 +41,8 @@ defineEmits(['start'])
 .buttons {
   display: flex;
   justify-content: space-around;
-  padding: 4rem 10rem 4rem 10rem;
+  padding: 6rem 10rem 4rem 10rem;
+  margin-bottom: 0.4rem;
 }
 
 .startBs {
@@ -52,6 +53,28 @@ defineEmits(['start'])
   background: #800080;
   border: 0.1rem solid #fd4300;
   border-radius: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
+}
+
+@keyframes bubble {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.startBs:active {
+  animation: bubble 0.3s ease-out;
 }
 
 .text1,

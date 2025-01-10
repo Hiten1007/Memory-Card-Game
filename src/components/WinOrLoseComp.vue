@@ -1,23 +1,29 @@
-<script setup></script>
+<script setup>
+const emit = defineEmits(['tryagain'])
+const { win, lose } = defineProps({
+  win: {
+    type: Boolean,
+    required: true,
+  },
+  lose: {
+    type: Boolean,
+    required: true,
+  },
+})
+</script>
 
 <template>
-  <div id="modal" class="modal">
+  <div v-if="win || lose" id="modal" class="modal">
     <div class="modal-content">
-      <div id="winmodal">
-        <img src="../assets/image copy 7.png" alt="" class="resultimg1" /><img
-          src="../assets/image copy 8.png"
-          alt=""
-          class="resulteffectimg1"
-        />
+      <div id="winmodal" v-if="win">
+        <img src="../assets/image copy 7.png" alt="" class="resultimg1" />
+        <img src="../assets/image copy 8.png" alt="" class="resulteffectimg1" />
       </div>
-      <div id="losemodal" style="display: none">
-        <img src="../assets/image copy 10.png" alt="" class="resultimg2" /><img
-          src="../assets/image copy 11.png"
-          alt=""
-          class="resulteffectimg2"
-        />
+      <div id="losemodal" v-if="lose">
+        <img src="../assets/image copy 10.png" alt="" class="resultimg2" />
+        <img src="../assets/image copy 11.png" alt="" class="resulteffectimg2" />
       </div>
-      <img src="../assets/image copy 9.png" alt="" class="tryagain" />
+      <img src="../assets/image copy 9.png" alt="" class="tryagain" @click="emit('tryagain')" />
     </div>
   </div>
 </template>
@@ -28,6 +34,7 @@
   padding-top: 0.8rem;
 }
 .modal {
+  display: flex;
   position: fixed;
   top: 0;
   left: 0;
@@ -35,7 +42,7 @@
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1000;
-  display: flex;
+
   justify-content: center;
   align-items: center;
 }
@@ -70,6 +77,7 @@
 }
 .resulteffectimg1 {
   width: 20rem;
+  margin-bottom: 0.5rem;
 }
 .resulteffectimg2 {
   width: 18rem;
