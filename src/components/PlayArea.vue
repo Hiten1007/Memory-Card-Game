@@ -11,7 +11,7 @@ const jsonData = ref([])
 const resultInfo = ref([])
 const clicked = []
 
-const isFlipping = ref(false) // Control flip state
+const isFlipping = ref(false)
 
 const getRandomItem = (arr) => {
   if (!Array.isArray(arr) || arr.length === 0) return null
@@ -65,13 +65,12 @@ const shuffle = (card) => {
       win.value = true
       best.value = Math.max(best.value, curr.value)
     } else {
-      // Start flipping all cards
       isFlipping.value = true
 
       setTimeout(() => {
-        shuffleArray() // Shuffle after flip animation
-        isFlipping.value = false // Stop flipping after shuffle
-      }, 600) // Duration should match the flip animation
+        shuffleArray()
+        isFlipping.value = false
+      }, 600)
     }
   }
 }
@@ -84,10 +83,9 @@ const reset = () => {
   getCards()
   isFlipping.value = true
 
-  // After flip animation, shuffle and reset
   setTimeout(() => {
-    isFlipping.value = false // Stop flipping after reset
-  }, 600) // Duration should match the flip animation
+    isFlipping.value = false
+  }, 600)
 }
 
 const tryagain = () => {
@@ -99,10 +97,9 @@ const tryagain = () => {
   getCards()
   isFlipping.value = true
 
-  // After flip animation, shuffle and retry
   setTimeout(() => {
-    isFlipping.value = false // Stop flipping after retry
-  }, 600) // Duration should match the flip animation
+    isFlipping.value = false
+  }, 600)
 }
 
 const curr = ref(0)
@@ -123,7 +120,6 @@ onMounted(() => {
     </div>
     <div class="cardspace">
       <div v-if="showGif" class="gif-container">
-        <!-- Replace with your GIF -->
         <img
           src="../assets/jojo_ss___rohan_loading_gif_by_jindopon_dac2vsz(1).gif"
           alt="Loading..."
@@ -140,7 +136,7 @@ onMounted(() => {
       >
         <div class="card">
           <div class="front">
-            <img :src="card.image" class="image" alt="image couldn't be loaded" />
+            <img :src="card.image" class="image" alt="Image couldn't be loaded" />
             <div class="cardtextbox">
               <p class="cardtext">{{ card.name }}</p>
             </div>
@@ -173,11 +169,12 @@ onMounted(() => {
 }
 
 .cardtext {
-  font-family: 'Antonio';
+  font-family: 'Anton';
   font-style: normal;
-  font-weight: 700;
+  font-weight: 400;
+  letter-spacing: 0.04rem;
   font-size: 0.8rem; /* Increase font size as needed */
-  line-height: 0.8rem;
+  line-height: 0.9rem;
   text-align: center;
   color: #ffffff;
   word-wrap: break-word; /* Ensures text wraps correctly without overflowing */
@@ -308,10 +305,10 @@ onMounted(() => {
   width: 5rem;
   height: 6rem;
   color: #ffd700;
-  font-family: 'Antonio';
+  font-family: 'Anton';
   font-style: normal;
   font-weight: 700;
-  font-size: 0.7rem;
+  font-size: 0.9rem;
   text-wrap-mode: wrap;
   text-align: center;
 }

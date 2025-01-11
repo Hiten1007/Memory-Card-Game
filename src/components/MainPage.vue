@@ -8,7 +8,6 @@ const toggleinstruct = () => {
   instructions.value = !instructions.value
 }
 
-// Toggle for background music
 const music = ref(false)
 const backgroundMusicPath =
   '/JoJo_s_Bizarre_Adventure_Phantom_Blood_OST_-_Fukutsu_Mushin_No_Sakebi_(mp3.pm).mp3'
@@ -25,7 +24,6 @@ const toggleMusic = () => {
   }
 }
 
-// Toggle for click sound effects
 const audio = ref(true)
 const audioSrc = computed(() => (audio.value ? '/image copy 5.png' : '/image copy 12.png'))
 
@@ -44,7 +42,6 @@ const playClickSound = () => {
   }
 }
 
-// Watch audio to manage click sound listeners
 watch(audio, (newValue) => {
   if (newValue) {
     window.addEventListener('click', playClickSound)
@@ -54,14 +51,12 @@ watch(audio, (newValue) => {
 })
 
 onMounted(() => {
-  // Set up background music
   backgroundMusic = new Audio(backgroundMusicPath)
   backgroundMusic.loop = true
   if (music.value) {
     backgroundMusic.play().catch((err) => console.warn('Music playback failed:', err))
   }
 
-  // Add click sound listener if enabled
   if (audio.value) {
     window.addEventListener('click', playClickSound)
   }
@@ -125,7 +120,6 @@ const toggleFullscreen = () => {
       />
     </div>
 
-    <!-- Dynamically rendered component -->
     <component :is="getCurrentStepComponent" :cards="cards" @start="start" />
 
     <div class="interact">
@@ -204,10 +198,9 @@ const toggleFullscreen = () => {
   padding-bottom: 6rem;
 }
 
-/* Cloud text styling */
 .cloud p {
   margin: 0;
-  color: #333; /* Text color */
+  color: #333;
   font-size: 1rem;
   font-family: 'Anton';
   font-style: normal;
